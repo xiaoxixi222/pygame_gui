@@ -186,11 +186,8 @@ class Entry(Control):
             self.manager.screen.fill(self.background_color, self.rect)
             if self.font:
                 text_surface = Surface(self.size*0.8, SRCALPHA)
-                for i in range(0, len(self.text_surface)+1):
-                    if i!=len(self.text_surface):
-                        text_surface.blit(self.text_surface[i], (Vector2(self.text_long[i], 0)))
-                    if i==self.course:
-                        pygame.draw.line(text_surface, self.course_color, Vector2(self.text_long[i], 0), Vector2(self.text_long[i], self.size[1]*0.8), 1)
+                for i in range(0, len(self.text_surface)):
+                    text_surface.blit(self.text_surface[i], (Vector2(self.text_long[i], 0)))
                 self.manager.screen.blit(text_surface, (self.position + self.size*0.1))
     def new_font(self):
         self.text_surface = []
