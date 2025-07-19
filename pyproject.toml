@@ -1,0 +1,9 @@
+[project]
+name = "pygame-gui"
+version = "0.1.0"
+description = "A GUI library for pygame"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pygame>=2.6.1",
+]
