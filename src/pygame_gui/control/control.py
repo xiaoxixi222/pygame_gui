@@ -162,6 +162,17 @@ class Entry(Control):
                     self.text = self.text[:self.course] + event.text + self.text[self.course:]
                     self.course += len(event.text)
                     self.new_font()
+                if event.type == MOUSEBUTTONDOWN:
+                    pos: Vector2 = Vector2(event.pos[0] - self.position[0]-self.size[0]*0.1, event.pos[1] - self.position[1]-self.size[1]*0.1)
+                    for i in range(0, len(self.text_long)-1):
+                        if self.text_long[i]<=pos[0]<self.text_long[i+1]:
+                            self.course = i
+                            break
+                    else:
+                        if pos[0]>self.text_long[-1]:
+                            self.course = len(self.text)
+                        if pos[0]<0:
+                            self.course = 0
             self.manager.screen.fill(self.background_color, self.rect)
             if self.font:
                 text_surface = Surface(self.size*0.8, SRCALPHA)
