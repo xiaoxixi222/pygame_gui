@@ -1,5 +1,5 @@
-import sys
-sys.path.append(r"d:\刘茗熹\Program Files (x86）\pygame_gui\src")
+import sys,os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pygame_gui
 import pygame
 pygame.init()
@@ -16,6 +16,7 @@ while True:
     for event in events:
         if event.type==pygame.QUIT:
             pygame.quit()
+            sys.exit()
     screen.fill((0,0,255))
     c.update(events)
     pygame.display.update()
