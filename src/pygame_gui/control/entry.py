@@ -64,7 +64,6 @@ class Entry(Control):
                             self.text = self.text[:self.course-1] + self.text[self.course:]
                             self.course -= 1
                             logging.debug(f"backspace: {self.text}, course: {self.course}")
-                            self.new_font()
                     elif event.key == K_RIGHT:
                         self.course = min(self.course + 1, len(self.text))
                         logging.debug(f"right, course: {self.course}")
@@ -75,7 +74,6 @@ class Entry(Control):
                     logging.debug(f"textinput: {event.text}")
                     self.text = self.text[:self.course] + event.text + self.text[self.course:]
                     self.course += len(event.text)
-                    self.new_font()
                 if event.type == MOUSEBUTTONDOWN:
                     pos: Vector2 = Vector2(event.pos[0] - self.position[0]-self.size[0]*0.1, event.pos[1] - self.position[1]-self.size[1]*0.1)
                     for i in range(0, len(self.text_long)-1):
