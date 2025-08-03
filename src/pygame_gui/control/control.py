@@ -117,12 +117,14 @@ class Control:
         self.size: Vector2 = Vector2(100, 100)
         self.position: Vector2 = Vector2(0, 0)
         self.rect: pygame.Rect = Rect(self.position, self.size)
+        self.manager.change_checker.add_change(self, "size", lambda new, old: self.update_rect())
 
     def update_rect(self) -> None:
         """
         更新控制对象的矩形。
         """
         self.rect = Rect(self.position, self.size)
+        logging.debug(f"update rect: {self.rect}")
 
     def update(self, events: list[pygame.event.Event], focus: bool) -> None:
         """

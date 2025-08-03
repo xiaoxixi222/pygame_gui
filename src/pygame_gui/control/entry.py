@@ -37,7 +37,6 @@ class Entry(Control):
         self.update_rect()
         self.manager.change_checker.add_change(self, "text", self.text_change)
         self.manager.change_checker.add_change(self, "font", lambda new, old: self.new_font())
-        self.manager.change_checker.add_change(self, "size", lambda new, old: self.update_rect())
     def focus_change(self,new:bool) -> None:
         if new:
             self.chosen = False
