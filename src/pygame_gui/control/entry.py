@@ -1,7 +1,8 @@
 from .control import Control , Controller
 import pygame
-from pygame.locals import *
+from pygame.locals import KEYDOWN, TEXTINPUT, MOUSEBUTTONDOWN, K_BACKSPACE, K_RIGHT, K_LEFT, SRCALPHA
 from pygame import Rect, Surface, Vector2, Color
+
 class Entry(Control):
     """
     输入框控件。
@@ -26,11 +27,23 @@ class Entry(Control):
         self.chosen: bool = False
         self.chosen_color: pygame.Color = Color(0,0,255)
         self.chosen_font_color: pygame.Color = Color(255,255,255)
-        self.__old_focus: bool = False
+        self.chosen_start: int|None = None
+        self.chosen_end: int|None = None
         self.__offset: int = 0
+        self.__old_focus: bool = False
         self.text_surface: list[Surface] = []
         self.text_long:list[int] = []
         self.update_rect()
+        self.manager.change_checker.add_change(self, "text", self.text_change)
+        self.manager.change_checker.add_change(self, "font", lambda new, old: self.new_font())
+        self.manager.change_checker.add_change(self, "size", lambda new, old: self.update_rect())
+    def focus_change(self,new:bool) -> None:
+        if new:
+            self.chosen = False
+            self.course = len(self.text)
+        self.__old_focus = new
+    def text_change(self,new:str, old:str) -> None:
+        self.new_font()
 
     def update(self, events: list[pygame.event.Event], focus: bool) -> None:
         """
@@ -39,9 +52,9 @@ class Entry(Control):
         :param events: 包含 pygame 事件的列表。
         :param focus: 是否被选中。
         """
-        if focus and not self.__old_focus:
-            self.course = len(self.text)
-        self.__old_focus = focus
+        super().update(events, focus)
+        if focus!= self.__old_focus:
+            self.focus_change(focus)
         if focus:
             for event in events:
                 if event.type == KEYDOWN:

@@ -1,8 +1,24 @@
 import pygame
 from pygame.locals import *  # type: ignore
 from pygame import Rect, Surface, Vector2, Color
-
-
+from typing import Any, Callable
+class ChangeChecker:
+    def __init__(self):
+        self.change:list[tuple[Any, Any, Callable[[Any, Any]]]] = []# [(obj, attr, func)]
+        self.old_values:dict[tuple[Any, Any, Callable[[Any, Any]]], Any] = {}# {(obj, attr, func): old_value}
+    def check(self):
+        for obj, attr, func in self.change:
+            old_value = self.old_values.get((obj, attr, func), None)
+            new_value = getattr(obj, attr)
+            if old_value!= new_value:
+                func(old_value, new_value)
+                self.old_values[(obj, attr, func)] = new_value
+    def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
+        self.change.append((obj, attr, func))
+        self.old_values[(obj, attr, func)] = getattr(obj, attr)
+    def remove_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
+        self.change.remove((obj, attr, func))
+        self.old_values.pop((obj, attr, func), None)
 class Controller:
     """
     控制器类，用于管理和更新控制对象。
@@ -15,6 +31,7 @@ class Controller:
         self.__controls: list[Control] = []
         self.__focus_control: Control | None = None
         self.screen: Surface=screen
+        self.change_checker = ChangeChecker()
 
     def update(self, events: list[pygame.event.Event]) -> None:
         """
@@ -37,6 +54,7 @@ class Controller:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.__focus_control = None
+        self.change_checker.check()
         for control in self.__controls:
             if control.enabled:
                 control.update(events, self.__focus_control == control)

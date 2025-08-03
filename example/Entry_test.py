@@ -1,6 +1,5 @@
 import sys,os
-#sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'src'))
-print(sys.path)
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'src'))
 import pygame_gui
 import pygame
 pygame.init()
@@ -9,8 +8,6 @@ c=pygame_gui.Controller(screen)
 entry = pygame_gui.entry.Entry(c,pygame.font.Font(r"C:\Windows\Fonts\HarmonyOS_Sans_SC_Bold.ttf", 20))
 entry.size=pygame.Vector2(200,30)
 entry.text = "Hello, world!"
-entry.new_font()
-entry.update_rect()
 c.add_control(entry)
 while True:
     events=pygame.event.get()
