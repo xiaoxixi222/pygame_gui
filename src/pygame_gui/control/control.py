@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *  # type: ignore
 from pygame import Rect, Surface, Vector2, Color
 from typing import Any, Callable
+import logging
 class ChangeChecker:
     def __init__(self):
         self.change:list[tuple[Any, Any, Callable[[Any, Any]]]] = []# [(obj, attr, func)]
@@ -13,12 +14,15 @@ class ChangeChecker:
             if old_value!= new_value:
                 func(old_value, new_value)
                 self.old_values[(obj, attr, func)] = new_value
+                logging.debug(f"check change: {obj}, {attr}, {func}, {old_value}, {new_value}, change: {self.change}, old_values: {self.old_values}")
     def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
         self.change.append((obj, attr, func))
         self.old_values[(obj, attr, func)] = getattr(obj, attr)
+        logging.debug(f"add change: {obj}, {attr}, {func}, {getattr(obj, attr)}, change: {self.change}, old_values: {self.old_values}")
     def remove_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
         self.change.remove((obj, attr, func))
         self.old_values.pop((obj, attr, func), None)
+        logging.debug(f"remove change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}")
 class Controller:
     """
     控制器类，用于管理和更新控制对象。
@@ -48,12 +52,15 @@ class Controller:
                         and control.rect.collidepoint(event.pos)
                     ):
                         self.__focus_control = control
+                        logging.debug(f"mouse focus control: {self.__focus_control}")
                         break
                 else:
                     self.__focus_control = None
+                    logging.debug("mouse lost focus")
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.__focus_control = None
+                    logging.debug("esc lost focus")
         self.change_checker.check()
         for control in self.__controls:
             if control.enabled:

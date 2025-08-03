@@ -1,3 +1,4 @@
+import logging
 from .control import Control , Controller
 import pygame
 from pygame.locals import KEYDOWN, TEXTINPUT, MOUSEBUTTONDOWN, K_BACKSPACE, K_RIGHT, K_LEFT, SRCALPHA
@@ -62,12 +63,16 @@ class Entry(Control):
                         if self.course > 0:
                             self.text = self.text[:self.course-1] + self.text[self.course:]
                             self.course -= 1
+                            logging.debug(f"backspace: {self.text}, course: {self.course}")
                             self.new_font()
                     elif event.key == K_RIGHT:
                         self.course = min(self.course + 1, len(self.text))
+                        logging.debug(f"right, course: {self.course}")
                     elif event.key == K_LEFT:
                         self.course = max(self.course - 1, 0)
+                        logging.debug(f"left, course: {self.course}")
                 if event.type == TEXTINPUT:
+                    logging.debug(f"textinput: {event.text}")
                     self.text = self.text[:self.course] + event.text + self.text[self.course:]
                     self.course += len(event.text)
                     self.new_font()
@@ -82,6 +87,7 @@ class Entry(Control):
                             self.course = len(self.text)
                         if pos[0]<0:
                             self.course = 0
+                    logging.debug(f"mousebuttondown: {pos}, course: {self.course}")
             self.manager.screen.fill(self.background_color, self.rect)
             if self.font:
                 text_surface = Surface(self.size*0.8, SRCALPHA)
@@ -107,3 +113,4 @@ class Entry(Control):
                 self.text_surface.append(self.font.render(self.text[i], True, self.text_color))
                 long += self.text_surface[i].get_width()
                 self.text_long.append(long)
+        logging.debug(f"text_surface: {self.text_surface}, text_long: {self.text_long}")

@@ -1,5 +1,10 @@
+import logging
+import coloredlogs
+logging.basicConfig(level=logging.DEBUG, filename='example.log', filemode='w',encoding='utf-8', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+coloredlogs.install(level='DEBUG')
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'src'))
+logging.debug(f"sys.path:{sys.path}")
 import pygame_gui
 import pygame
 pygame.init()
