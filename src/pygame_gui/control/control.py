@@ -12,7 +12,7 @@ class ChangeChecker:
             old_value = self.old_values.get((obj, attr, func), None)
             new_value = getattr(obj, attr)
             if old_value!= new_value:
-                func(old_value, new_value)
+                func(new_value, old_value)
                 self.old_values[(obj, attr, func)] = new_value
                 logging.debug(f"check change: {obj}, {attr}, {func}, {old_value}, {new_value}, change: {self.change}, old_values: {self.old_values}")
     def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
