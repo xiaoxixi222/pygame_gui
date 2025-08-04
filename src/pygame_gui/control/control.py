@@ -3,38 +3,57 @@ from pygame.locals import *  # type: ignore
 from pygame import Rect, Surface, Vector2, Color
 from typing import Any, Callable
 import logging
+
+
 class ChangeChecker:
     def __init__(self):
-        self.change:list[tuple[Any, Any, Callable[[Any, Any]]]] = []# [(obj, attr, func)]
-        self.old_values:dict[tuple[Any, Any, Callable[[Any, Any]]], Any] = {}# {(obj, attr, func): old_value}
+        self.change: list[tuple[Any, Any, Callable[[Any, Any]]]] = (
+            []
+        )  # [(obj, attr, func)]
+        self.old_values: dict[tuple[Any, Any, Callable[[Any, Any]]], Any] = (
+            {}
+        )  # {(obj, attr, func): old_value}
+
     def check(self):
         for obj, attr, func in self.change:
             old_value = self.old_values.get((obj, attr, func), None)
             new_value = getattr(obj, attr)
-            if old_value!= new_value:
+            if old_value != new_value:
                 func(new_value, old_value)
                 self.old_values[(obj, attr, func)] = new_value
-                logging.debug(f"change checker: check change: {obj}, {attr}, {func}, {new_value}, {old_value}, change: {self.change}, old_values: {self.old_values}")
+                logging.debug(
+                    f"change checker: check change: {obj}, {attr}, {func}, {new_value}, {old_value}, change: {self.change}, old_values: {self.old_values}"
+                )
+
     def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
         self.change.append((obj, attr, func))
         self.old_values[(obj, attr, func)] = getattr(obj, attr)
-        logging.debug(f"change checker: add change: {obj}, {attr}, {func}, {getattr(obj, attr)}, change: {self.change}, old_values: {self.old_values}")
-    def remove_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
+        logging.debug(
+            f"change checker: add change: {obj}, {attr}, {func}, {getattr(obj, attr)}, change: {self.change}, old_values: {self.old_values}"
+        )
+
+    def remove_change(
+        self, obj: Any, attr: str, func: Callable[[Any, Any], None]
+    ) -> None:
         self.change.remove((obj, attr, func))
         self.old_values.pop((obj, attr, func), None)
-        logging.debug(f"change checker: remove change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}")
+        logging.debug(
+            f"change checker: remove change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}"
+        )
+
+
 class Controller:
     """
     控制器类，用于管理和更新控制对象。
     """
 
-    def __init__(self,screen:Surface) -> None:
+    def __init__(self, screen: Surface) -> None:
         """
         初始化 Controller 类
         """
         self.__controls: list[Control] = []
         self.__focus_control: Control | None = None
-        self.screen: Surface=screen
+        self.screen: Surface = screen
         self.change_checker = ChangeChecker()
         self.__id_counter: int = 0
 
@@ -53,7 +72,9 @@ class Controller:
                         and control.rect.collidepoint(event.pos)
                     ):
                         self.__focus_control = control
-                        logging.debug(f"controller: mouse focus control: {self.__focus_control}")
+                        logging.debug(
+                            f"controller: mouse focus control: {self.__focus_control}"
+                        )
                         break
                 else:
                     self.__focus_control = None
@@ -77,7 +98,9 @@ class Controller:
         if control in self.__controls:
             return False
         self.__controls.append(control)
-        logging.debug(f"controller: add control: {control.name} old_id: {control.id} new_id: {self.__id_counter}")
+        logging.debug(
+            f"controller: add control: {control.name} old_id: {control.id} new_id: {self.__id_counter}"
+        )
         control.id = self.__id_counter
         self.__id_counter += 1
         return True
@@ -122,9 +145,11 @@ class Control:
         self.size: Vector2 = Vector2(100, 100)
         self.position: Vector2 = Vector2(0, 0)
         self.rect: pygame.Rect = Rect(self.position, self.size)
-        self.manager.change_checker.add_change(self, "size", lambda new, old: self.update_rect())
-        self.id:int = id(self)
-        self.name:str = "control"
+        self.manager.change_checker.add_change(
+            self, "size", lambda new, old: self.update_rect()
+        )
+        self.id: int = id(self)
+        self.name: str = "control"
 
     def update_rect(self) -> None:
         """
