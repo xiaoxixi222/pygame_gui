@@ -27,7 +27,7 @@ class ChangeChecker:
 
     def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
         if (obj, attr, func) in self.change:
-            logging.debug(
+            logging.warning(
                 f"change checker: already has change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}"
             )
             return
@@ -41,7 +41,7 @@ class ChangeChecker:
         self, obj: Any, attr: str, func: Callable[[Any, Any], None]
     ) -> None:
         if (obj, attr, func) not in self.change:
-            logging.debug(
+            logging.warning(
                 f"change checker: not in change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}"
             )
             return
@@ -106,6 +106,7 @@ class Controller:
         :return: 如果控制对象已存在返回 False，否则返回 True。
         """
         if control in self.__controls:
+            logging.warning(f"controller: control already exists: {control.name}{control.id}")
             return False
         self.__controls.append(control)
         logging.debug(
@@ -123,6 +124,7 @@ class Controller:
         :return: 如果控制对象不存在返回 False，否则返回 True。
         """
         if control not in self.__controls:
+            logging.warning(f"controller: control not found: {control.name}{control.id}")
             return False
         self.__controls.remove(control)
         logging.debug(f"controller: remove control: {control.name}{control.id}")
