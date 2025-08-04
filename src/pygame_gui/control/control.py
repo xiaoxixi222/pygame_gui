@@ -14,15 +14,15 @@ class ChangeChecker:
             if old_value!= new_value:
                 func(new_value, old_value)
                 self.old_values[(obj, attr, func)] = new_value
-                logging.debug(f"check change: {obj}, {attr}, {func}, {new_value}, {old_value}, change: {self.change}, old_values: {self.old_values}")
+                logging.debug(f"change checker: check change: {obj}, {attr}, {func}, {new_value}, {old_value}, change: {self.change}, old_values: {self.old_values}")
     def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
         self.change.append((obj, attr, func))
         self.old_values[(obj, attr, func)] = getattr(obj, attr)
-        logging.debug(f"add change: {obj}, {attr}, {func}, {getattr(obj, attr)}, change: {self.change}, old_values: {self.old_values}")
+        logging.debug(f"change checker: add change: {obj}, {attr}, {func}, {getattr(obj, attr)}, change: {self.change}, old_values: {self.old_values}")
     def remove_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
         self.change.remove((obj, attr, func))
         self.old_values.pop((obj, attr, func), None)
-        logging.debug(f"remove change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}")
+        logging.debug(f"change checker: remove change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}")
 class Controller:
     """
     控制器类，用于管理和更新控制对象。
@@ -36,6 +36,7 @@ class Controller:
         self.__focus_control: Control | None = None
         self.screen: Surface=screen
         self.change_checker = ChangeChecker()
+        self.__id_counter: int = 0
 
     def update(self, events: list[pygame.event.Event]) -> None:
         """
@@ -52,15 +53,15 @@ class Controller:
                         and control.rect.collidepoint(event.pos)
                     ):
                         self.__focus_control = control
-                        logging.debug(f"mouse focus control: {self.__focus_control}")
+                        logging.debug(f"controller: mouse focus control: {self.__focus_control}")
                         break
                 else:
                     self.__focus_control = None
-                    logging.debug("mouse lost focus")
+                    logging.debug("controller: mouse lost focus")
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.__focus_control = None
-                    logging.debug("esc lost focus")
+                    logging.debug("controller: esc lost focus")
         self.change_checker.check()
         for control in self.__controls:
             if control.enabled:
@@ -76,6 +77,9 @@ class Controller:
         if control in self.__controls:
             return False
         self.__controls.append(control)
+        logging.debug(f"controller: add control: {control.name} old_id: {control.id} new_id: {self.__id_counter}")
+        control.id = self.__id_counter
+        self.__id_counter += 1
         return True
 
     def remove_control(self, control: "Control") -> bool:
@@ -88,6 +92,7 @@ class Controller:
         if control not in self.__controls:
             return False
         self.__controls.remove(control)
+        logging.debug(f"controller: remove control: {control.name}{control.id}")
         return True
 
     def get_controls(self) -> list["Control"]:
@@ -118,13 +123,15 @@ class Control:
         self.position: Vector2 = Vector2(0, 0)
         self.rect: pygame.Rect = Rect(self.position, self.size)
         self.manager.change_checker.add_change(self, "size", lambda new, old: self.update_rect())
+        self.id:int = id(self)
+        self.name:str = "control"
 
     def update_rect(self) -> None:
         """
         更新控制对象的矩形。
         """
         self.rect = Rect(self.position, self.size)
-        logging.debug(f"update rect: {self.rect}")
+        logging.debug(f"{self.name}{self.id}: update rect: {self.rect}")
 
     def update(self, events: list[pygame.event.Event], focus: bool) -> None:
         """
