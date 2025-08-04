@@ -26,6 +26,11 @@ class ChangeChecker:
                 )
 
     def add_change(self, obj: Any, attr: str, func: Callable[[Any, Any], None]) -> None:
+        if (obj, attr, func) in self.change:
+            logging.debug(
+                f"change checker: already has change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}"
+            )
+            return
         self.change.append((obj, attr, func))
         self.old_values[(obj, attr, func)] = getattr(obj, attr)
         logging.debug(
@@ -35,6 +40,11 @@ class ChangeChecker:
     def remove_change(
         self, obj: Any, attr: str, func: Callable[[Any, Any], None]
     ) -> None:
+        if (obj, attr, func) not in self.change:
+            logging.debug(
+                f"change checker: not in change: {obj}, {attr}, {func}, change: {self.change}, old_values: {self.old_values}"
+            )
+            return
         self.change.remove((obj, attr, func))
         self.old_values.pop((obj, attr, func), None)
         logging.debug(
