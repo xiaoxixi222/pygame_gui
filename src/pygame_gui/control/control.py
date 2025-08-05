@@ -164,6 +164,9 @@ class Control:
         self.manager.change_checker.add_change(
             self, "size", lambda new, old: self.update_rect()
         )
+        self.manager.change_checker.add_change(
+            self, "position", lambda new, old: self.update_rect()
+        )
         self.id: int = id(self)
         self.name: str = "control"
 
