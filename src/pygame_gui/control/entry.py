@@ -47,6 +47,7 @@ class Entry(Control):
         self.text_surface: list[Surface] = []
         self.text_long: list[int] = []
         self.update_rect()
+        self.new_font()
         self.manager.change_checker.add_change(self, "text", self.text_change)
         self.manager.change_checker.add_change(
             self, "font", lambda new, old: self.new_font()
