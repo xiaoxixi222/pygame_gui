@@ -83,7 +83,7 @@ class Controller:
                     ):
                         self.__focus_control = control
                         logging.debug(
-                            f"controller: mouse focus control: {self.__focus_control}"
+                            f"controller: mouse focus control: {self.__focus_control.name}{self.__focus_control.id}"
                         )
                         break
                 else:
@@ -106,7 +106,9 @@ class Controller:
         :return: 如果控制对象已存在返回 False，否则返回 True。
         """
         if control in self.__controls:
-            logging.warning(f"controller: control already exists: {control.name}{control.id}")
+            logging.warning(
+                f"controller: control already exists: {control.name}{control.id}"
+            )
             return False
         self.__controls.append(control)
         logging.debug(
@@ -124,7 +126,9 @@ class Controller:
         :return: 如果控制对象不存在返回 False，否则返回 True。
         """
         if control not in self.__controls:
-            logging.warning(f"controller: control not found: {control.name}{control.id}")
+            logging.warning(
+                f"controller: control not found: {control.name}{control.id}"
+            )
             return False
         self.__controls.remove(control)
         logging.debug(f"controller: remove control: {control.name}{control.id}")
