@@ -5,9 +5,13 @@ from pygame.locals import MOUSEBUTTONDOWN, KEYDOWN, K_ESCAPE
 from pygame import Rect, Vector2, K_SPACE, Surface
 from pygame.event import Event
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
+
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
+)
 from pygame_gui import Controller, Control, ChangeChecker
 import logging
+
 logging.basicConfig(
     level=logging.DEBUG,
     filename="example.log",
@@ -16,15 +20,16 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
+
 class TestControl(unittest.TestCase):
 
     def setUp(self):
-        self.mock_screen =  MagicMock(spec=Surface)
+        self.mock_screen = MagicMock(spec=Surface)
         self.mock_controller = Controller(self.mock_screen)
         self.mock_controller.change_checker = MagicMock(spec=ChangeChecker)
         self.control = Control(self.mock_controller)
 
-    def test_init(self): 
+    def test_init(self):
         logging.debug(f"TestControl.test_init:start")
         self.assertEqual(self.control.manager, self.mock_controller)
         self.assertTrue(self.control.visible)
@@ -33,7 +38,7 @@ class TestControl(unittest.TestCase):
         self.assertEqual(self.control.size, Vector2(100, 100))
         self.assertEqual(self.control.position, Vector2(0, 0))
         self.assertEqual(self.control.rect, Rect(Vector2(0, 0), Vector2(100, 100)))
-        self.assertEqual(self.mock_controller.change_checker.add_change.call_count, 2) # type: ignore
+        self.assertEqual(self.mock_controller.change_checker.add_change.call_count, 2)  # type: ignore
         logging.debug(f"TestControl.test_init:end")
 
     def test_update_rect(self):
@@ -42,8 +47,11 @@ class TestControl(unittest.TestCase):
         self.control.size = Vector2(200, 200)
         self.control.update_rect()
         self.assertNotEqual(self.control.rect, original_rect)
-        self.assertEqual(self.control.rect, Rect(self.control.position, self.control.size))
+        self.assertEqual(
+            self.control.rect, Rect(self.control.position, self.control.size)
+        )
         logging.debug(f"TestControl.test_update_rect:end")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
