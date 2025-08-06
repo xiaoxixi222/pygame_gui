@@ -4,11 +4,6 @@ import pygame
 from pygame.locals import MOUSEBUTTONDOWN, KEYDOWN, K_ESCAPE
 from pygame import Rect, Vector2, K_SPACE, Surface
 from pygame.event import Event
-import sys, os
-
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
-)
 from pygame_gui import Controller, Control, ChangeChecker
 import logging
 

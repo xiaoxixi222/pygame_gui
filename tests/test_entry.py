@@ -8,21 +8,23 @@ from pygame.locals import (
     K_BACKSPACE,
     K_RIGHT,
     K_LEFT,
-    K_LSHIFT
+    K_LSHIFT,
 )
 from pygame import Vector2
-pygame.init()
-import sys, os
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
-)
 from pygame_gui.control.entry import Entry
 import logging
+
+pygame.init()
+
+
 class get_pressed_mock:
-    def __init__(self, key:dict[int, bool]):
+    def __init__(self, key: dict[int, bool]):
         self.key = key
-    def __getitem__(self, key:int):
+
+    def __getitem__(self, key: int):
         return self.key.get(key, False)
+
+
 class TestEntry(unittest.TestCase):
     def setUp(self):
         self.manager = MagicMock()
@@ -43,8 +45,8 @@ class TestEntry(unittest.TestCase):
         self.assertEqual(self.entry.chosen_font_color, pygame.Color(255, 255, 255))
         self.assertIsNone(self.entry.chosen_start)
         self.assertIsNone(self.entry.chosen_end)
-        self.assertEqual(self.entry._Entry__offset, 0) # type: ignore
-        self.assertFalse(self.entry._Entry__old_focus) # type: ignore
+        self.assertEqual(self.entry._Entry__offset, 0)  # type: ignore
+        self.assertFalse(self.entry._Entry__old_focus)  # type: ignore
         self.assertEqual(self.entry.text_surface, [])
         self.assertEqual(self.entry.text_long, [0])
         logging.info("test_init:end")
@@ -87,8 +89,9 @@ class TestEntry(unittest.TestCase):
     def test_focus_change_when_not_focused(self):
         logging.info("test_focus_change_when_not_focused:start")
         self.entry.focus_change(False)
-        self.assertEqual(self.entry._Entry__old_focus, False) # type: ignore
+        self.assertEqual(self.entry._Entry__old_focus, False)  # type: ignore
         logging.info("test_focus_change_when_not_focused:end")
+
     @patch("pygame_gui.control.entry.Entry.new_font")
     def test_text_change(self, mock_new_font):
         logging.info("test_text_change:start")
@@ -101,7 +104,7 @@ class TestEntry(unittest.TestCase):
         logging.info("test_update_with_backspace_events:start")
         event = pygame.event.Event(KEYDOWN, key=K_BACKSPACE)
         self.entry.text = "abc"
-        self.entry._Entry__old_focus = True # type: ignore
+        self.entry._Entry__old_focus = True  # type: ignore
         self.entry.course = 1
         self.entry.update([event], True)
         self.assertEqual(self.entry.text, "bc")
@@ -119,7 +122,7 @@ class TestEntry(unittest.TestCase):
         self.entry.chosen = True
         self.entry.chosen_start = 1
         self.entry.chosen_end = 5
-        self.entry._Entry__old_focus = True # type: ignore
+        self.entry._Entry__old_focus = True  # type: ignore
         self.entry.update([event], True)
         self.assertEqual(self.entry.text, "167890")
         self.assertEqual(self.entry.course, 1)
@@ -144,7 +147,7 @@ class TestEntry(unittest.TestCase):
         event = pygame.event.Event(KEYDOWN, key=K_RIGHT)
         self.entry.text = "ab"
         self.entry.course = 1
-        self.entry._Entry__old_focus = True # type: ignore
+        self.entry._Entry__old_focus = True  # type: ignore
         self.entry.update([event], True)
         self.assertEqual(self.entry.course, 2)
         self.entry.update([event], True)
@@ -156,7 +159,7 @@ class TestEntry(unittest.TestCase):
         event = pygame.event.Event(KEYDOWN, key=K_LEFT)
         self.entry.text = "abc"
         self.entry.course = 1
-        self.entry._Entry__old_focus = True # type: ignore
+        self.entry._Entry__old_focus = True  # type: ignore
         self.entry.update([event], True)
         self.assertEqual(self.entry.course, 0)
         self.entry.update([event], True)
@@ -168,7 +171,7 @@ class TestEntry(unittest.TestCase):
         event = pygame.event.Event(TEXTINPUT, text="x")
         self.entry.text = "abc"
         self.entry.course = 1
-        self.entry._Entry__old_focus = True # type: ignore
+        self.entry._Entry__old_focus = True  # type: ignore
         self.entry.update([event], True)
         self.assertEqual(self.entry.text, "axbc")
         self.assertEqual(self.entry.course, 2)

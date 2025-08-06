@@ -2,20 +2,7 @@ import unittest, logging
 from unittest.mock import MagicMock, patch
 from pygame import Surface, Rect, MOUSEBUTTONDOWN, KEYDOWN, K_ESCAPE, Vector2
 from pygame.event import Event
-import sys, os
-
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src")
-)
 from pygame_gui import Controller, Control
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename="example.log",
-    filemode="w",
-    encoding="utf-8",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 
 class ControlMock(Control):
