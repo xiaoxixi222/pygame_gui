@@ -21,7 +21,16 @@ class EventListenerSignals(Enum):
     NO_CHANGE = 13
 
 
-EVENT_TYPE = tuple[EventListenerSignals, int | tuple[int,...] | tuple[tuple[EventListenerSignals, tuple|int], tuple[EventListenerSignals, tuple|int]]|None]
+EVENT_TYPE = tuple[
+    EventListenerSignals,
+    int
+    | tuple[int, ...]
+    | tuple[
+        tuple[EventListenerSignals, tuple | int],
+        tuple[EventListenerSignals, tuple | int],
+    ]
+    | None,
+]
 EVENT_ANSWER_TYPE = bool | list[pygame.event.Event] | EventListenerSignals
 
 

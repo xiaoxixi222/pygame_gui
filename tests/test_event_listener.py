@@ -2,15 +2,20 @@ import unittest
 from unittest.mock import Mock, patch
 from enum import Enum, auto
 import pygame
-from pygame_gui import EventListener, EventListenerSignals, EVENT_TYPE, EVENT_ANSWER_TYPE
+from pygame_gui import (
+    EventListener,
+    EventListenerSignals,
+    EVENT_TYPE,
+    EVENT_ANSWER_TYPE,
+)
 import logging
+
 
 class TestEventListener(unittest.TestCase):
     def setUp(self):
         self.event_listener = EventListener()
         pygame.init()
         pygame.key.set_mods(0)
-        
 
     def test_add_event_listener(self):
         logging.info("test_add_event_listener:start")
@@ -22,7 +27,9 @@ class TestEventListener(unittest.TestCase):
         mouse_click_event = (EventListenerSignals.MOUSE_CLICK_DOWN, 1)
         mouse_id = self.event_listener.add_event_listener(mouse_click_event)
         self.assertIn(mouse_click_event, self.event_listener.event_listeners_id)
-        self.assertEqual(self.event_listener.event_listeners_id[mouse_click_event], mouse_id)
+        self.assertEqual(
+            self.event_listener.event_listeners_id[mouse_click_event], mouse_id
+        )
         logging.info("test_add_event_listener:end")
 
     def test_set_event_listener_result(self):
@@ -34,7 +41,7 @@ class TestEventListener(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.event_listener.set_event_listener_result(-1, True)
         with self.assertRaises(ValueError):
-            self.event_listener.set_event_listener_result(id + 1,True)
+            self.event_listener.set_event_listener_result(id + 1, True)
         logging.info("test_set_event_listener_result:end")
 
     def test_get_event_listener_result(self):
@@ -69,12 +76,15 @@ class TestEventListener(unittest.TestCase):
         logging.info("test_update_event_listener_result_key_pressed:start")
         key_pressed_event = (EventListenerSignals.SINGLE_KEY_PRESSED, pygame.K_a)
         id = self.event_listener.add_event_listener(key_pressed_event)
-        with patch('pygame.key.get_pressed', return_value=[False]*256):
+        with patch("pygame.key.get_pressed", return_value=[False] * 256):
             event = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a)]
             self.event_listener.update_event_listener_result(event)
             self.assertFalse(self.event_listener.get_event_listener_result(id))
 
-        with patch('pygame.key.get_pressed', return_value=[True if i == pygame.K_a else False for i in range(256)]):
+        with patch(
+            "pygame.key.get_pressed",
+            return_value=[True if i == pygame.K_a else False for i in range(256)],
+        ):
             event = []
             self.event_listener.update_event_listener_result(event)
             self.assertTrue(self.event_listener.get_event_listener_result(id))
@@ -82,9 +92,17 @@ class TestEventListener(unittest.TestCase):
 
     def test_update_event_listener_result_combination_key(self):
         logging.info("test_update_event_listener_result_combination_key:start")
-        combination_key_event = (EventListenerSignals.COMBINATION_KEY, (pygame.K_a, pygame.K_b))
+        combination_key_event = (
+            EventListenerSignals.COMBINATION_KEY,
+            (pygame.K_a, pygame.K_b),
+        )
         id = self.event_listener.add_event_listener(combination_key_event)
-        with patch('pygame.key.get_pressed', return_value=[True if i in (pygame.K_a, pygame.K_b) else False for i in range(256)]):
+        with patch(
+            "pygame.key.get_pressed",
+            return_value=[
+                True if i in (pygame.K_a, pygame.K_b) else False for i in range(256)
+            ],
+        ):
             event = []
             self.event_listener.update_event_listener_result(event)
             self.assertTrue(self.event_listener.get_event_listener_result(id))
@@ -112,12 +130,16 @@ class TestEventListener(unittest.TestCase):
         logging.info("test_update_event_listener_result_mouse_click_pressed:start")
         mouse_click_pressed_event = (EventListenerSignals.MOUSE_CLICK_PRESSED, 0)
         id = self.event_listener.add_event_listener(mouse_click_pressed_event)
-        with patch('pygame.mouse.get_pressed', return_value=[False, False, False, False, False]):
+        with patch(
+            "pygame.mouse.get_pressed", return_value=[False, False, False, False, False]
+        ):
             event = [pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=0)]
             self.event_listener.update_event_listener_result(event)
             self.assertFalse(self.event_listener.get_event_listener_result(id))
 
-        with patch('pygame.mouse.get_pressed', return_value=[True, False, False, False, False]):
+        with patch(
+            "pygame.mouse.get_pressed", return_value=[True, False, False, False, False]
+        ):
             event = []
             self.event_listener.update_event_listener_result(event)
             self.assertTrue(self.event_listener.get_event_listener_result(id))
@@ -146,19 +168,35 @@ class TestEventListener(unittest.TestCase):
 
     def test_update_event_listener_result_parallel(self):
         logging.info("test_update_event_listener_result_parallel:start")
-        parallel_event = (EventListenerSignals.PARALLEL, ((EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_a), (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_b)))
+        parallel_event = (
+            EventListenerSignals.PARALLEL,
+            (
+                (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_a),
+                (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_b),
+            ),
+        )
         id = self.event_listener.add_event_listener(parallel_event)
         event_a = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a)]
         self.event_listener.update_event_listener_result(event_a)
         self.assertFalse(self.event_listener.get_event_listener_result(id))
-        event_b = [pygame.event.Event(pygame.KEYUP, key = pygame.K_a), pygame.event.Event(pygame.KEYDOWN, key=pygame.K_b),pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a)]
+        event_b = [
+            pygame.event.Event(pygame.KEYUP, key=pygame.K_a),
+            pygame.event.Event(pygame.KEYDOWN, key=pygame.K_b),
+            pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a),
+        ]
         self.event_listener.update_event_listener_result(event_b)
         self.assertTrue(self.event_listener.get_event_listener_result(id))
         logging.info("test_update_event_listener_result_parallel:end")
 
     def test_update_event_listener_result_any(self):
         logging.info("test_update_event_listener_result_any:start")
-        any_event = (EventListenerSignals.ANY, ((EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_a), (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_b)))
+        any_event = (
+            EventListenerSignals.ANY,
+            (
+                (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_a),
+                (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_b),
+            ),
+        )
         id = self.event_listener.add_event_listener(any_event)
         event_a = [pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a)]
         self.event_listener.update_event_listener_result(event_a)
@@ -174,6 +212,7 @@ class TestEventListener(unittest.TestCase):
         self.event_listener.update_event_listener_result(event_c)
         self.assertFalse(self.event_listener.get_event_listener_result(id))
         logging.info("test_update_event_listener_result_any:end")
+
     def test_update_event_listener_result_block_key(self):
         logging.info("test_update_event_listener_result_block_key:start")
         block_key_event1 = (EventListenerSignals.SINGLE_KEY_DOWN, pygame.K_a)
@@ -194,5 +233,6 @@ class TestEventListener(unittest.TestCase):
     def tearDown(self):
         pygame.quit()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
